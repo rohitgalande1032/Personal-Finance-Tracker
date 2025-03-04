@@ -1,15 +1,18 @@
 import React from 'react'
 import Header from './components/Header/Header'
 import Dashboard from './pages/Dashboard'
-import SignupSignin from './components/SignupSignin/SignupSignin'
+import Signup from './pages/Signup'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
 const App = () => {
   return (
-    <div>
-      <Header />
-      <SignupSignin />
-      <Dashboard />
-    </div>
+    <BrowserRouter>
+    <Header />
+      <Routes>
+        <Route path='/' element={<Signup/>} />
+        <Route path='/dashboard' element={<Dashboard/>} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
