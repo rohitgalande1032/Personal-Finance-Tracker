@@ -3,10 +3,11 @@ import "./styles.css"
 import Input from "../input/Input"
 import Button from '../Button/Button'
 import { toast } from 'react-toastify'
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { auth, db, doc, setDoc } from '../../firebase'
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { auth, db, doc, provider, setDoc } from '../../firebase'
 import { useNavigate } from 'react-router-dom'
 import { getDoc } from 'firebase/firestore'
+import { GoogleAuthProvider } from 'firebase/auth/web-extension'
 
 
 const SignupSignin = () => {
@@ -100,7 +101,7 @@ const SignupSignin = () => {
     const userData = await getDoc(userRef)
     if(!userData.exists()){
       try {
-        await setDoc(doc(db, "user", user.uid), {
+        await setDoc(doc(db, "users", user.uid), {
           name: user.displayName ? user.displayName : name,
           email: user.email,
           photoURL: user.photoURL ? user.photoURL : "",
@@ -117,6 +118,37 @@ const SignupSignin = () => {
       setLoading(false)
     }
 
+  }
+
+  //Login using Google
+
+  function googleAuth() {
+    setLoading(true)
+    try {
+      signInWithPopup(auth, provider)
+      .then((result) => {
+        // This gives you a Google Access Token. You can use it to access the Google API.
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        const token = credential.accessToken;
+        // The signed-in user info.
+        const user = result.user;
+        console.log("Auth user>>>", user)
+        createDoc(user)
+        setLoading(false)
+        navigate("/dashboard")
+        toast.success("User Authenticated!")
+        // IdP data available using getAdditionalUserInfo(result)
+      }).catch((error) => {
+        setLoading(false)
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        toast.error(errorMessage)
+      });
+    } catch (error) {
+      toast.error(error.message)
+      setLoading(false)
+    }
   }
 
   return (
@@ -144,7 +176,7 @@ const SignupSignin = () => {
 
         <Button disabled={loading} text={loading? "Loading":"Login Using Email and Password"} onClick={loginUsingEmail}/>
         <p style={{textAlign:"center", margin: "0"}}>or</p>
-        <Button text={loading? "Loading..." : "Login Using Google"} blue={true}/>
+        <Button text={loading? "Loading..." : "Login Using Google"} blue={true} onClick={googleAuth}/>
         <p style={{textAlign:"center", margin: "0", fontWeight:"300", fontSize:"0.8rem", cursor:"pointer"}}
         onClick={()=>setLoginForm(!loginForm)}>Or Don't Have An Account? <span style={{color: "var(--theme)"}}>Click Here.</span></p>
       </form>
@@ -187,7 +219,7 @@ const SignupSignin = () => {
 
         <Button disabled={loading} text={loading? "Loading":"Signup Using Email and Password"} onClick={signUpWithEmail}/>
         <p style={{textAlign:"center", margin: "0"}}>or</p>
-        <Button text={loading? "Loading..." : "Signup Using Google"} blue={true}/>
+        <Button text={loading? "Loading..." : "Signup Using Google"} blue={true} onClick={googleAuth}/>
         <p style={{textAlign:"center", margin: "0", fontWeight:"300", fontSize:"0.8rem", cursor:"pointer"}}
         onClick={()=>setLoginForm(!loginForm)}>Or Have An Account? <span style={{color: "var(--theme)"}}>Click Here.</span></p>
       </form>
