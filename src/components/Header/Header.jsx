@@ -5,6 +5,7 @@ import { auth } from '../../firebase';
 import { useNavigate } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 import { toast } from 'react-toastify';
+import userImg from "../.././assets/user.svg"
 
 const Header = () => {
   const [user, loading] = useAuthState(auth);
@@ -31,7 +32,10 @@ const Header = () => {
 
       {/* If user is there then show logout */}
       {user &&(
-      <p className='logo link' onClick={logoutFun}>Logout</p>
+      <div style={{display:"flex", alignItems:"center", gap:"0.5rem"}}>
+        <img src={user.photoURL?user.photoURL:userImg} width={"30"} style={{borderRadius:"50%"}}/>
+        <p className='logo link' onClick={logoutFun}>Logout</p>
+      </div>
       )}
     </div>
   )

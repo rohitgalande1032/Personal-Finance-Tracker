@@ -55,7 +55,7 @@ const TransactionsTable = ({ transactions }) => {
   });
 
   return (
-    <div>
+    <div style={{width:"95%", margin:"auto"}}>
       <div
         style={{
           display: "flex",
