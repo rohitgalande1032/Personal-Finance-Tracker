@@ -9,6 +9,7 @@ import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth, db } from '../firebase'
 import { addDoc, collection, getDocs, query } from 'firebase/firestore'
 import moment from 'moment'
+import TransactionsTable from '../components/TransactionsTable/TransactionsTable'
 
 
 const Dashboard = () => {
@@ -150,6 +151,8 @@ const Dashboard = () => {
         handleExpenseCancel={handleExpenseCancel}
         onFinish={onFinish}
       />
+
+      <TransactionsTable transactions={transactions}/>
       </>
       )}
     </div>
