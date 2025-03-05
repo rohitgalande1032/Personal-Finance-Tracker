@@ -8,7 +8,6 @@ import { toast } from 'react-toastify'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth, db } from '../firebase'
 import { addDoc, collection, getDocs, query } from 'firebase/firestore'
-import moment from 'moment'
 import TransactionsTable from '../components/TransactionsTable/TransactionsTable'
 
 
@@ -48,7 +47,7 @@ const Dashboard = () => {
   function onFinish(values, type) {
     const newTransaction = {
       type: type,
-      date: moment(values.date).format("YYYY-MM-DD"),
+      date: values.date.format("YYYY-MM-DD"),
       amount: parseFloat(values.amount),
       tag: values.tag,
       name: values.name
@@ -84,7 +83,7 @@ const Dashboard = () => {
   useEffect(()=>{
     //Get all docs from collection
     fetTransactions()
-  },[])
+  },[user]) 
 
   //Balance will be calculated whenever transaction made, changed or updated
   //Call the calculate balance function to calculate total balance when transaction changed
