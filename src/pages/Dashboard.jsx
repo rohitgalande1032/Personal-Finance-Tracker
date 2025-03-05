@@ -20,6 +20,12 @@ const Dashboard = () => {
   const [transactions, setTransactions] = useState([])
   const [loading, setLoading] = useState(false)
 
+
+  //hook ro change the current balance, total income, and total expenses
+  const [income, setIncome] = useState(0)
+  const [expense, setExpense] = useState(0)
+  const [totalBalance, setTotalBalance] = useState(0)
+
   const showExpenseModal = () => {
     setIsExpensiveModelVisisble(true)
   }
@@ -61,6 +67,12 @@ const Dashboard = () => {
       console.log("Document written with ID: ", docRef.id)
 
       toast.success("Transaction Added!")
+
+      //Add updated transactions 
+      let newArr = transactions
+      newArr.push(transaction)
+      setTransactions(newArr)
+      calculateBalance()
     } catch (error) {
       toast.error("Error adding document", error.message)
     }
@@ -72,6 +84,30 @@ const Dashboard = () => {
     //Get all docs from collection
     fetTransactions()
   },[])
+
+  //Balance will be calculated whenever transaction made, changed or updated
+  //Call the calculate balance function to calculate total balance when transaction changed
+  useEffect(()=>{
+    calculateBalance()
+  }, [transactions])
+
+  //Calculate Total balance
+  function calculateBalance() {
+    let incomeTotal = 0
+    let expenseTotal = 0
+
+    transactions.forEach((transaction) => {
+      if(transaction.type === "income"){
+        incomeTotal += transaction.amount
+      }else{
+        expenseTotal += transaction.amount
+      }
+    })
+
+    setIncome(incomeTotal)
+    setExpense(expenseTotal)
+    setTotalBalance(incomeTotal-expenseTotal)
+  }
 
   async function fetTransactions() {
     setLoading(true)
@@ -96,6 +132,9 @@ const Dashboard = () => {
       {loading ? (<p>Loading....</p>) : (
         <>
         <Cards 
+        income={income}
+        expense={expense}
+        totalBalance={totalBalance}
         showExpenseModal = {showExpenseModal}
         showIncomeModal = {showIncomeModal}
       />
