@@ -1,7 +1,7 @@
 .charts-wrapper {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: start;
     width: 95%;
     margin: 20px auto;
     padding: 2rem;
