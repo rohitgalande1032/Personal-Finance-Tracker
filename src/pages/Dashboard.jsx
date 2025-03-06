@@ -9,6 +9,8 @@ import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth, db } from '../firebase'
 import { addDoc, collection, getDocs, query } from 'firebase/firestore'
 import TransactionsTable from '../components/TransactionsTable/TransactionsTable'
+import NoTransactions from '../components/TransactionsTable/NoTransactions'
+import Charts from '../components/Charts/Charts'
 
 
 const Dashboard = () => {
@@ -127,6 +129,11 @@ const Dashboard = () => {
     setLoading(false)
   }
 
+  //send sorted transactions by date to chart
+  let sortedTransactions = transactions.sort((a, b) => {
+    return new Date(a.date) - new Date(b.date)
+  })
+
   return (
     <div>
       <Header />
@@ -152,7 +159,10 @@ const Dashboard = () => {
         onFinish={onFinish}
       />
 
+      { transactions.length !=0 ? <Charts sortedTransactions={sortedTransactions}/> : <NoTransactions />}
+
       <TransactionsTable transactions={transactions} addTransaction={addTransaction} fetchTransactions={fetTransactions}/>
+
       </>
       )}
     </div>
