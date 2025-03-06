@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import "./styles.css";
 import { Radio, Select, Table } from "antd";
 import searchIcon from "../../assets/search.svg";
-import { unparse } from "papaparse";
+import { parse, unparse } from "papaparse";
+import { toast } from "react-toastify";
 
-const TransactionsTable = ({ transactions }) => {
+const TransactionsTable = ({ transactions, addTransaction, fetchTransactions }) => {
   const [search, setSeach] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
   const [sortKey, setSortKey] = useState("");
@@ -55,7 +56,7 @@ const TransactionsTable = ({ transactions }) => {
     }
   });
 
-  //Function for export to csv
+  //Function for export to csv --> JSON to CSV
   function exportToCSV() {
     let csv = unparse({
       fields: ["name", "type", "tag", "date", "amount"],
@@ -69,6 +70,33 @@ const TransactionsTable = ({ transactions }) => {
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
+  }
+
+  //function to import 
+  function importFromCSV(event) {
+    event.preventDefault()
+    try {
+      parse(event.target.files[0], {
+        header: true,
+        complete: async function (results) {
+          console.log(results)
+          for(const transaction of results.data) {
+            console.log("Transactions: ", transaction)
+            const newTransaction = {
+              ...transaction,
+              amount: parseFloat(transaction.amount)
+            }
+            await addTransaction(newTransaction, true)
+          }
+        }
+      })
+      toast.success("All Transactions Added")
+      fetchTransactions()
+      event.target.files = null
+
+    } catch (error) {
+      toast.error(error.message)
+    }
   }
 
   return (
@@ -140,6 +168,7 @@ const TransactionsTable = ({ transactions }) => {
               id="file-csv"
               type="file"
               accept=".csv"
+              onChange={importFromCSV}
               required
               style={{ display: "none" }}
             />
