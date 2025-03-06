@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./styles.css";
 import { Radio, Select, Table } from "antd";
 import searchIcon from "../../assets/search.svg";
+import { unparse } from "papaparse";
 
 const TransactionsTable = ({ transactions }) => {
   const [search, setSeach] = useState("");
@@ -53,6 +54,22 @@ const TransactionsTable = ({ transactions }) => {
       return 0;
     }
   });
+
+  //Function for export to csv
+  function exportToCSV() {
+    let csv = unparse({
+      fields: ["name", "type", "tag", "date", "amount"],
+      data: transactions,
+    })
+    let blob = new Blob([csv], {type: "text/csv;charset=utf-8;"})
+    let url = window.URL.createObjectURL(blob)
+    let link = document.createElement("a")
+    link.href = url
+    link.download = "transactions.csv"
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
 
   return (
     <div style={{width:"95%", margin:"auto"}}>
@@ -115,7 +132,7 @@ const TransactionsTable = ({ transactions }) => {
               width: "400px",
             }}
           >
-            <button className="btn">Export to CSV</button>
+            <button className="btn" onClick={exportToCSV}>Export to CSV</button>
             <label htmlFor="file-csv" className="btn btn-blue">
               Import from CSV
             </label>
