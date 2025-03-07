@@ -1,2 +1,3 @@
 # Finnancly Link
-https://finnancely.netlify.app/dashboard
+https://finnancely.netlify.app/
+
